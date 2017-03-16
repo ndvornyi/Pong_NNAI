@@ -102,16 +102,12 @@ def draw(canvas):
          else:       
             score2+=1
             spawn_ball(RIGHT)
-   
     
     if ball_pos[0]+BALL_RADIUS>=WIDTH-PAD_WIDTH:
         if paddle2_pos+HALF_PAD_HEIGHT+5>=ball_pos[1]>=paddle2_pos-HALF_PAD_HEIGHT-5:
             ball_vel[0]= -ball_vel[0]*1.1
             ball_vel[1]=ball_vel[1]*1.1
             
-
-
-
         else:
             score1+=1
             spawn_ball(LEFT) 
@@ -119,7 +115,7 @@ def draw(canvas):
     ball_pos[0] += ball_vel[0]
     ball_pos[1] += ball_vel[1]
     
-       # collect frames in dataset, 1 frame by every 3
+    # collect frames in dataset, 1 frame by every 3
     if frame_gap == 3:
         frame_gap = 0
         if frames_limit == 50:
