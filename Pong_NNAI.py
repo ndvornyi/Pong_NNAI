@@ -49,7 +49,6 @@ def spawn_ball(direction):
     elif direction==False: 
         ball_vel=[-start_hor_vel,-start_ver_vel]
 
-
 # define event handlers
 def new_game():
     global paddle1_pos, paddle2_pos, paddle1_vel, paddle2_vel, ball_pos  # these are numbers
@@ -76,14 +75,12 @@ def new_game():
 def print_connects():
 
     print nn.params
-    print nnfire 
 
 def nntrain():
     global frames_limit
     trainer.trainEpochs(300)
     ds.clear()
-    print frames_limit
-    
+    print "Trained on ", frames_limit," frames"
 
 def draw(canvas):
     global score1, score2, paddle1_pos, paddle2_pos, ball_pos, ball_vel, ds, start_hor_vel, start_ver_vel, trained_status, nnfire, wanted_direction, frames_limit, frame_gap
@@ -117,16 +114,12 @@ def draw(canvas):
 
         else:
             score1+=1
-            spawn_ball(LEFT)
-           
-    
-    # if ball_pos[1]-paddle2_pos > 0:
-    #     wanted_direction = 1
-    # elif ball_pos[1]-paddle2_pos < 0: 
-    #     wanted_direction = -1
-    
+            spawn_ball(LEFT) 
 
-
+    ball_pos[0] += ball_vel[0]
+    ball_pos[1] += ball_vel[1]
+    
+       # collect frames in dataset, 1 frame by every 3
     if frame_gap == 3:
         frame_gap = 0
         if frames_limit == 50:
@@ -139,22 +132,11 @@ def draw(canvas):
             frames_limit+=1
     frame_gap+=1
 
-    
-        
-        
-        
-    
-    ball_pos[0] += ball_vel[0]
-    ball_pos[1] += ball_vel[1]
-    
-
     nnfire=float(nn.activate([ball_pos[0]/WIDTH,ball_pos[1]/HEIGHT,ball_vel[1]/start_ver_vel]))
-
-    
-    
 
     # draw ball
     canvas.draw_circle(ball_pos, BALL_RADIUS, 1, "Red", "Red")
+
     # update paddle's vertical position, keep paddle on the screen
     if paddle1_pos + paddle1_vel >= HALF_PAD_HEIGHT and paddle1_pos + paddle1_vel <= HEIGHT - HALF_PAD_HEIGHT:
         paddle1_pos += paddle1_vel
@@ -173,8 +155,6 @@ def draw(canvas):
     canvas.draw_text(str(frames_limit)+ " frames collected",[40, 360],20,"White")
     canvas.draw_text("Trained: " + str(trained_status),[440, 360],20,"White")
 
-    
-    
 def keydown(key):
     global paddle1_vel, paddle2_vel
     if key == 172:
@@ -227,13 +207,10 @@ nn.addConnection(hidden2_to_out)
 #nn.addRecurrentConnection(FullConnection(outLayer,hidden1Layer))
 #nn.addRecurrentConnection(FullConnection(hidden2Layer,hidden2Layer))
 nn.sortModules()
-
+# Dataset and trainer init
 ds=SupervisedDataSet(3, 1)
 trainer = BackpropTrainer(nn , dataset=ds, learningrate = 0.03)
 
-
-
-#print ds
 # create frame
 frame = simplegui.create_frame("Pong", WIDTH, HEIGHT)
 frame.set_draw_handler(draw)
@@ -242,7 +219,6 @@ frame.set_keyup_handler(keyup)
 frame.add_button("New game!", new_game, 100)
 frame.add_button("Print connects", print_connects, 100)
 frame.add_button("Train", nntrain, 100)
-
 
 # start frame
 new_game()
